@@ -1,39 +1,99 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class CameraRotate : MonoBehaviour
 {
-    [SerializeField] private GameObject player;
-    public bool dragRotateActive;
-    private Vector2 lastMousePosition;
-    private float rotateDir = 0f;
+    [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
+    [SerializeField] private float followOffsetMin = 5f;
+    [SerializeField] private float followOffsetMax = 25f;
+    [SerializeField] private float lowerYMin = 5f;
+    [SerializeField] private float lowerYMax = 25f;
+    private Vector3 followOffset;
+    public bool isHeldDown = false;
+    float zoomSpeed = 2f;
+    float zoomAmount = 2f;
+    Vector3 zoomDir;
+
+    private void Awake()
+    {
+        followOffset = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset;
+    }
+    void HandleCameraZoom_MoveForward()
+    {
+        if (Input.mouseScrollDelta.y > 0)
+        {
+            followOffset.y -= zoomAmount;
+        }
+        if (Input.mouseScrollDelta.y < 0)
+        {
+            followOffset.y += zoomAmount;
+        }
+
+        followOffset.y = Mathf.Clamp(followOffset.y, lowerYMin, lowerYMax);
+
+        Vector3.Lerp(cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset, followOffset, zoomSpeed * Time.deltaTime);
+        cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = followOffset;
+    }
+
+    void HoldButton()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            isHeldDown = true;
+        }
+        if (Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            isHeldDown = false;
+        }
+    }
+
+    void teste()
+    {
+        Vector3 zoomDir = followOffset.normalized;
+        float zoomAmount = 2f;
+
+        if (Input.mouseScrollDelta.y > 0)
+        {
+            if (isHeldDown)
+            {
+                Debug.Log("Zoom positivo ativado - Especial");
+            }
+            else if (!isHeldDown)
+            {
+                followOffset -= zoomAmount * zoomDir;
+            }
+        }
+        else if (Input.mouseScrollDelta.y < 0)
+        {
+            if (isHeldDown)
+            {
+                Debug.Log("Zoom negativo ativado - Especial");
+            }
+            else if (!isHeldDown)
+            {
+                followOffset += zoomAmount * zoomDir;
+            }
+        }
+        if (followOffset.magnitude < followOffsetMin)
+        {
+            followOffset = zoomDir * followOffsetMin;
+        }
+        if (followOffset.magnitude > followOffsetMax)
+        {
+            followOffset = zoomDir * followOffsetMax;
+        }
+        float zoomSpeed = 2f;
+        Vector3.Lerp(cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset, followOffset, zoomSpeed * Time.deltaTime);
+        cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = followOffset;
+    }
+
 
     void Update()
     {
-        transform.position = player.transform.position;
-
-
-        if (Input.GetMouseButtonDown(2))
-        {
-            dragRotateActive = true;
-            lastMousePosition = Input.mousePosition;
-        }
-        if (Input.GetMouseButtonUp(2))
-        {
-            dragRotateActive = false;
-        }
-
-        if (dragRotateActive)
-        {
-            Vector2 mouseMovementDelta = (Vector2)Input.mousePosition - lastMousePosition;
-
-            rotateDir = mouseMovementDelta.x;
-
-            lastMousePosition = Input.mousePosition;
-        }
-
-        float rotateSpeed = 100f;
-        transform.eulerAngles += new Vector3(0, rotateDir * rotateSpeed * Time.deltaTime, 0);
+        // HoldButton();
+        // teste();
+        HandleCameraZoom_MoveForward();
     }
 }

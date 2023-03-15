@@ -50,6 +50,7 @@ public class TopDownWASDMovement : MonoBehaviour
     public bool movimentoTarget = false;
 
     bool isMouseActive = false;
+    
 
     private void Awake()
     {
@@ -93,7 +94,6 @@ public class TopDownWASDMovement : MonoBehaviour
     {
         isJumpPressed = context.ReadValueAsButton();
     }
-
 
     void handleGravity()
     {
@@ -239,7 +239,7 @@ public class TopDownWASDMovement : MonoBehaviour
         if (controller.isGrounded && isShieldUp)
         {
             animator.SetBool("isShielding", true);
-            animator.SetFloat("speedAnim",0.45f);
+            animator.SetFloat("speedAnim", 0.45f);
             speed = 2f;
         }
         else
