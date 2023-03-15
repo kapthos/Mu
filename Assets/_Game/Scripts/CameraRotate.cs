@@ -20,22 +20,6 @@ public class CameraRotate : MonoBehaviour
     {
         followOffset = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset;
     }
-    void HandleCameraZoom_MoveForward()
-    {
-        if (Input.mouseScrollDelta.y > 0)
-        {
-            followOffset.y -= zoomAmount;
-        }
-        if (Input.mouseScrollDelta.y < 0)
-        {
-            followOffset.y += zoomAmount;
-        }
-
-        followOffset.y = Mathf.Clamp(followOffset.y, lowerYMin, lowerYMax);
-
-        Vector3.Lerp(cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset, followOffset, zoomSpeed * Time.deltaTime);
-        cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = followOffset;
-    }
 
     void HoldButton()
     {
@@ -49,7 +33,7 @@ public class CameraRotate : MonoBehaviour
         }
     }
 
-    void teste()
+    void HandleCameraZoomStyles()
     {
         Vector3 zoomDir = followOffset.normalized;
         float zoomAmount = 2f;
@@ -58,42 +42,51 @@ public class CameraRotate : MonoBehaviour
         {
             if (isHeldDown)
             {
-                Debug.Log("Zoom positivo ativado - Especial");
+                followOffset.y -= zoomAmount;
+                followOffset.y = Mathf.Clamp(followOffset.y, lowerYMin, lowerYMax);
             }
             else if (!isHeldDown)
             {
                 followOffset -= zoomAmount * zoomDir;
+                if (followOffset.magnitude < followOffsetMin)
+                {
+                    followOffset = zoomDir * followOffsetMin;
+                }
+                if (followOffset.magnitude > followOffsetMax)
+                {
+                    followOffset = zoomDir * followOffsetMax;
+                }
             }
         }
         else if (Input.mouseScrollDelta.y < 0)
         {
             if (isHeldDown)
             {
-                Debug.Log("Zoom negativo ativado - Especial");
+                followOffset.y += zoomAmount;
+                followOffset.y = Mathf.Clamp(followOffset.y, lowerYMin, lowerYMax);
             }
             else if (!isHeldDown)
             {
                 followOffset += zoomAmount * zoomDir;
+                if (followOffset.magnitude < followOffsetMin)
+                {
+                    followOffset = zoomDir * followOffsetMin;
+                }
+                if (followOffset.magnitude > followOffsetMax)
+                {
+                    followOffset = zoomDir * followOffsetMax;
+                }
             }
         }
-        if (followOffset.magnitude < followOffsetMin)
-        {
-            followOffset = zoomDir * followOffsetMin;
-        }
-        if (followOffset.magnitude > followOffsetMax)
-        {
-            followOffset = zoomDir * followOffsetMax;
-        }
+
         float zoomSpeed = 2f;
         Vector3.Lerp(cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset, followOffset, zoomSpeed * Time.deltaTime);
         cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = followOffset;
     }
 
-
     void Update()
     {
-        // HoldButton();
-        // teste();
-        HandleCameraZoom_MoveForward();
+        HoldButton();
+        HandleCameraZoomStyles();
     }
 }
