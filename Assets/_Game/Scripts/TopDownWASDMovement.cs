@@ -21,7 +21,7 @@ public class TopDownWASDMovement : MonoBehaviour
     bool isMovementPressed;
     bool isRunPressed = false;
     float speed = 5f;
-    float runMultiplier = 3f;
+    float runMultiplier = 2f;
     float rotationFactorPerFrame = 1.0f;
 
     //Variaveis de localização do Mouse
@@ -156,8 +156,8 @@ public class TopDownWASDMovement : MonoBehaviour
             animator.SetBool(isJumpingHash, true);
             isJumpingAnimating = true;
             isJumping = true;
-            currentMovement.y = initialJumpVelocity * 0.5f;
-            currentRunMovement.y = initialJumpVelocity * 0.5f;
+            currentMovement.y = initialJumpVelocity * 0.43f;
+            currentRunMovement.y = initialJumpVelocity * 0.43f;
         }
         else if (!isJumpPressed && isJumping && controller.isGrounded)
         {
@@ -239,10 +239,13 @@ public class TopDownWASDMovement : MonoBehaviour
         if (controller.isGrounded && isShieldUp)
         {
             animator.SetBool("isShielding", true);
+            animator.SetFloat("speedAnim",0.45f);
+            speed = 2f;
         }
         else
         {
             animator.SetBool("isShielding", false);
+            speed = 5f;
         }
     }
 
