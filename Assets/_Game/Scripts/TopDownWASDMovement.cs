@@ -9,22 +9,25 @@ public class TopDownWASDMovement : MonoBehaviour
     PlayerInput playerInput;
     CharacterController controller;
     Animator animator;
+    [SerializeField] GameObject miraTeste;
 
     //Variaveis movimento
     Vector2 currentMovementInput;
     Vector3 currentMovement;
     Vector3 currentRunMovement;
+    bool isWalking = false;
 
     Vector3 testeMovimentoRelativo;
     bool isMovementPressed;
     bool isRunPressed = false;
-    public float speed = 5f;
-    public float runMultiplier = 3f;
+    float speed = 5f;
+    float runMultiplier = 3f;
+    float rotationFactorPerFrame = 1.0f;
 
     //Variaveis de localização do Mouse
     Ray ray;
     RaycastHit hit;
-    public float turnSpeed = 7f;
+    float turnSpeed = 7f;
     bool freezeY = true;
 
     //Variaveis de Gravidade
@@ -42,6 +45,11 @@ public class TopDownWASDMovement : MonoBehaviour
 
     //Variaveis de Shield
     bool isShieldUp = false;
+
+    public bool movimentoMouse = true;
+    public bool movimentoTarget = false;
+
+    bool isMouseActive = false;
 
     private void Awake()
     {
@@ -85,22 +93,7 @@ public class TopDownWASDMovement : MonoBehaviour
     {
         isJumpPressed = context.ReadValueAsButton();
     }
-    void mouseRotation()
-    {
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (!Physics.Raycast(ray, out hit))
-        {
-            return;
-        }
-        Vector3 pos = hit.point - transform.position;
 
-        if (freezeY)
-        {
-            pos.y = 0;
-        }
-        Quaternion rot = Quaternion.LookRotation(pos);
-        transform.rotation = Quaternion.Lerp(transform.rotation, rot, turnSpeed * Time.deltaTime);
-    }
 
     void handleGravity()
     {
@@ -131,6 +124,31 @@ public class TopDownWASDMovement : MonoBehaviour
         }
     }
 
+    void changeMoveStyle()
+    {
+        isMouseActive = animator.GetBool("isMouseActive");
+        if (movimentoTarget)
+        {
+            animator.SetBool("isMouseActive", false);
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                movimentoMouse = !movimentoMouse;
+                movimentoTarget = !movimentoTarget;
+            }
+            handleRotation();
+        }
+        else if (movimentoMouse)
+        {
+            animator.SetBool("isMouseActive", true);
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                movimentoMouse = !movimentoMouse;
+                movimentoTarget = !movimentoTarget;
+            }
+            mouseRotation();
+        }
+    }
+
     void handleJump()
     {
         if (!isJumping && controller.isGrounded && isJumpPressed)
@@ -154,20 +172,66 @@ public class TopDownWASDMovement : MonoBehaviour
         currentMovement.z = currentMovementInput.y;
         currentRunMovement.x = currentMovementInput.x * runMultiplier;
         currentRunMovement.z = currentMovementInput.y * runMultiplier;
-
-        // Vector3 forward = Camera.main.transform.forward;
-        // Vector3 right = Camera.main.transform.right;
-        // forward.y = 0;
-        // right.y = 0;
-        // forward = forward.normalized;
-        // right = right.normalized;
-
-        // Vector3 forwardRelative = currentMovement.z * forward;
-        // Vector3 rightRelative = currentMovement.x * right;
-
-        // testeMovimentoRelativo = forwardRelative + rightRelative;
-
         isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
+    }
+
+    void handleRotation()
+    {
+        Vector3 positionToLookAt;
+        positionToLookAt.x = currentMovement.x;
+        positionToLookAt.y = 0.0f;
+        positionToLookAt.z = currentMovement.z;
+
+        Quaternion currentRotation = transform.rotation;
+
+        if (isMovementPressed)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(positionToLookAt);
+            transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationFactorPerFrame);
+        }
+    }
+
+    void mouseRotation()
+    {
+        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (!Physics.Raycast(ray, out hit))
+        {
+            return;
+        }
+        Vector3 pos = hit.point - transform.position;
+
+        if (freezeY)
+        {
+            pos.y = 0;
+        }
+
+        miraTeste.transform.position = pos;
+
+        Quaternion rot = Quaternion.LookRotation(miraTeste.transform.position);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rot, turnSpeed);
+    }
+
+    void handleAnimation()
+    {
+        isWalking = animator.GetBool("isWalking");
+
+        if (isMovementPressed && !isWalking)
+        {
+            animator.SetBool("isWalking", true);
+        }
+        else if (!isMovementPressed && isWalking)
+        {
+            animator.SetBool("isWalking", false);
+        }
+        Vector3 inputVector = (Vector3.forward * currentMovement.z) + (Vector3.right * currentMovement.x);
+
+        Vector3 animationVector = transform.InverseTransformDirection(inputVector);
+
+        var VelocityX = animationVector.x;
+        var VelocityZ = animationVector.z;
+
+        animator.SetFloat("horizontalMovement", VelocityX);
+        animator.SetFloat("verticalMovement", VelocityZ);
     }
 
     void handleShieldStance()
@@ -182,24 +246,10 @@ public class TopDownWASDMovement : MonoBehaviour
         }
     }
 
-    void handleAnimation()
-    {
-        Vector3 inputVector = (Vector3.forward * currentMovement.z) + (Vector3.right * currentMovement.x);
-
-        Vector3 animationVector = transform.InverseTransformDirection(inputVector);
-
-        var VelocityX = animationVector.x;
-        var VelocityZ = animationVector.z;
-
-        animator.SetFloat("horizontalMovement", VelocityX);
-        animator.SetFloat("verticalMovement", VelocityZ);
-    }
-
     void Update()
     {
         handleAnimation();
-        mouseRotation();
-
+        changeMoveStyle();
         if (isRunPressed)
         {
             controller.Move(currentRunMovement * speed * Time.deltaTime);
