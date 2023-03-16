@@ -17,12 +17,15 @@ public class TopDownWASDMovement : MonoBehaviour
     Vector3 currentRunMovement;
     bool isWalking = false;
 
-    Vector3 testeMovimentoRelativo;
     bool isMovementPressed;
     bool isRunPressed = false;
-    float speed = 5f;
+    [SerializeField] float speed;
     float runMultiplier = 2f;
     float rotationFactorPerFrame = 1.0f;
+
+    [SerializeField] float regularSpeed = 5f;
+    [SerializeField] float walkSpeed = 2f;
+    [SerializeField] float stunned = 0f;
 
     //Variaveis de localização do Mouse
     Ray ray;
@@ -48,9 +51,10 @@ public class TopDownWASDMovement : MonoBehaviour
 
     public bool movimentoMouse = true;
     public bool movimentoTarget = false;
-
     bool isMouseActive = false;
-    
+
+    bool isAttacking = false;
+
 
     private void Awake()
     {
@@ -67,10 +71,9 @@ public class TopDownWASDMovement : MonoBehaviour
         playerInput.CharacterControls.Run.canceled += onRun;
         playerInput.CharacterControls.Jump.started += onJump;
         playerInput.CharacterControls.Jump.canceled += onJump;
-        playerInput.CharacterControls.Shield.started += onShieldStance;
-        playerInput.CharacterControls.Shield.canceled += onShieldStance;
 
         setupJumpVariables();
+        speed = 5f;
     }
 
     void setupJumpVariables()
@@ -78,11 +81,6 @@ public class TopDownWASDMovement : MonoBehaviour
         float timeToApex = maxJumpTime / 2;
         gravity = (-2 / maxJumpHeight) / Mathf.Pow(timeToApex, 2);
         initialJumpVelocity = (2.0f * maxJumpHeight) / timeToApex;
-    }
-
-    void onShieldStance(InputAction.CallbackContext context)
-    {
-        isShieldUp = context.ReadValueAsButton();
     }
 
     void onRun(InputAction.CallbackContext context)
@@ -236,16 +234,43 @@ public class TopDownWASDMovement : MonoBehaviour
 
     void handleShieldStance()
     {
-        if (controller.isGrounded && isShieldUp)
+        if (Input.GetMouseButtonDown(1))
         {
             animator.SetBool("isShielding", true);
             animator.SetFloat("speedAnim", 0.45f);
-            speed = 2f;
+            speed = walkSpeed;
         }
-        else
+        else if (Input.GetMouseButtonUp(1))
         {
             animator.SetBool("isShielding", false);
-            speed = 5f;
+            speed = regularSpeed;
+        }
+    }
+
+    void handleAttack()
+    {
+        if (Input.GetMouseButtonDown(0) && controller.isGrounded)
+        {
+            isAttacking = true;
+            animator.SetBool("isAttacking", true);
+            speed = stunned;
+        }
+    }
+
+    void AttackEnds()
+    {
+        isAttacking = false;
+        animator.SetBool("isAttacking", false);
+        speed = regularSpeed;
+    }
+
+    void DashTest(){
+        if(Input.GetKeyDown(KeyCode.LeftAlt)){
+            // speed = speed * 5f;
+            animator.SetBool("isDashing",true);
+        }
+        if(Input.GetKeyUp(KeyCode.LeftAlt)){
+            // speed = regularSpeed;
         }
     }
 
@@ -262,8 +287,20 @@ public class TopDownWASDMovement : MonoBehaviour
             controller.Move(currentMovement * speed * Time.deltaTime);
         }
         handleShieldStance();
+        handleAttack();
+        DashTest();
         handleGravity();
         handleJump();
+    }
+
+    void FootR(){
+        
+    }
+    void FootL(){
+
+    }
+    void Hit(){
+
     }
 
     private void OnEnable()

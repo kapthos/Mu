@@ -12,7 +12,7 @@ public class CameraRotate : MonoBehaviour
     [SerializeField] private float lowerYMax = 25f;
     private Vector3 followOffset;
     public bool isHeldDown = false;
-    float zoomSpeed = 2f;
+    float zoomSpeed = 2.5f;
     float zoomAmount = 2f;
     Vector3 zoomDir;
 
@@ -36,7 +36,6 @@ public class CameraRotate : MonoBehaviour
     void HandleCameraZoomStyles()
     {
         Vector3 zoomDir = followOffset.normalized;
-        float zoomAmount = 2f;
 
         if (Input.mouseScrollDelta.y > 0)
         {
@@ -79,7 +78,6 @@ public class CameraRotate : MonoBehaviour
             }
         }
 
-        float zoomSpeed = 2f;
         Vector3.Lerp(cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset, followOffset, zoomSpeed * Time.deltaTime);
         cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = followOffset;
     }
