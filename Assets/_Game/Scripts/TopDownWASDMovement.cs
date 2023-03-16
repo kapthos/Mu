@@ -55,6 +55,9 @@ public class TopDownWASDMovement : MonoBehaviour
 
     bool isAttacking = false;
 
+    public float dashSpeed;
+    public float dashTime;
+
 
     private void Awake()
     {
@@ -264,13 +267,24 @@ public class TopDownWASDMovement : MonoBehaviour
         speed = regularSpeed;
     }
 
-    void DashTest(){
-        if(Input.GetKeyDown(KeyCode.LeftAlt)){
-            // speed = speed * 5f;
-            animator.SetBool("isDashing",true);
+    void DashTest()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            StartCoroutine(Dash());
         }
-        if(Input.GetKeyUp(KeyCode.LeftAlt)){
-            // speed = regularSpeed;
+    }
+
+    IEnumerator Dash()
+    {
+        float startTime = Time.time;
+
+        while (Time.time < startTime + dashTime)
+        {
+            animator.SetBool("isWalking", false);
+            controller.Move(currentMovement * speed * dashSpeed * Time.deltaTime);
+
+            yield return null;
         }
     }
 
@@ -293,13 +307,16 @@ public class TopDownWASDMovement : MonoBehaviour
         handleJump();
     }
 
-    void FootR(){
-        
-    }
-    void FootL(){
+    void FootR()
+    {
 
     }
-    void Hit(){
+    void FootL()
+    {
+
+    }
+    void Hit()
+    {
 
     }
 

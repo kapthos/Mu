@@ -4711,6 +4711,8 @@ MonoBehaviour:
   stunned: 0
   movimentoMouse: 1
   movimentoTarget: 0
+  dashSpeed: 6
+  dashTime: 0.1
 --- !u!143 &249423399415011942
 CharacterController:
   m_ObjectHideFlags: 0
