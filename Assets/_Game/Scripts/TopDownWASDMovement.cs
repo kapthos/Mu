@@ -9,7 +9,8 @@ public class TopDownWASDMovement : MonoBehaviour
     PlayerInput playerInput;
     CharacterController controller;
     Animator animator;
-    [SerializeField] GameObject miraTeste;
+    public GameObject miraTeste;
+    SelectionManager selectionManager;
 
     //Variaveis movimento
     Vector2 currentMovementInput;
@@ -19,13 +20,13 @@ public class TopDownWASDMovement : MonoBehaviour
 
     bool isMovementPressed;
     bool isRunPressed = false;
-    [SerializeField] float speed;
+    float speed;
     float runMultiplier = 2f;
     float rotationFactorPerFrame = 1.0f;
 
-    [SerializeField] float regularSpeed = 5f;
-    [SerializeField] float walkSpeed = 2f;
-    [SerializeField] float stunned = 0f;
+    float regularSpeed = 5f;
+    float walkSpeed = 2f;
+    float stunned = 0f;
 
     //Variaveis de localização do Mouse
     Ray ray;
@@ -49,14 +50,13 @@ public class TopDownWASDMovement : MonoBehaviour
     //Variaveis de Shield
     bool isShieldUp = false;
 
-    public bool movimentoMouse = true;
-    public bool movimentoTarget = false;
-    bool isMouseActive = false;
+    bool movimentoMouse;
+    bool movimentoTarget;
 
     bool isAttacking = false;
 
-    public float dashSpeed;
-    public float dashTime;
+    float dashSpeed = 5.5f;
+    float dashTime = 0.1f;
 
 
     private void Awake()
@@ -64,6 +64,7 @@ public class TopDownWASDMovement : MonoBehaviour
         playerInput = new PlayerInput();
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        selectionManager = GetComponent<SelectionManager>();
 
         isJumpingHash = Animator.StringToHash("isJumping");
 
@@ -74,6 +75,9 @@ public class TopDownWASDMovement : MonoBehaviour
         playerInput.CharacterControls.Run.canceled += onRun;
         playerInput.CharacterControls.Jump.started += onJump;
         playerInput.CharacterControls.Jump.canceled += onJump;
+
+        movimentoMouse = false;
+        movimentoTarget = true;
 
         setupJumpVariables();
         speed = 5f;
@@ -127,7 +131,6 @@ public class TopDownWASDMovement : MonoBehaviour
 
     void changeMoveStyle()
     {
-        isMouseActive = animator.GetBool("isMouseActive");
         if (movimentoTarget)
         {
             animator.SetBool("isMouseActive", false);
@@ -206,6 +209,7 @@ public class TopDownWASDMovement : MonoBehaviour
             pos.y = 0;
         }
 
+        // GameObject blabla = selectionManager.objetoSelecionado;
         miraTeste.transform.position = pos;
 
         Quaternion rot = Quaternion.LookRotation(miraTeste.transform.position);

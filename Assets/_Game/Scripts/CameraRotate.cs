@@ -8,7 +8,7 @@ public class CameraRotate : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
     [SerializeField] private float followOffsetMin = 5f;
     [SerializeField] private float followOffsetMax = 25f;
-    [SerializeField] private float lowerYMin = 5f;
+    [SerializeField] private float lowerYMin = 2f;
     [SerializeField] private float lowerYMax = 25f;
     private Vector3 followOffset;
     public bool isHeldDown = false;
