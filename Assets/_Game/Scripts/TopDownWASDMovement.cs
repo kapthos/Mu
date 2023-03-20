@@ -58,7 +58,6 @@ public class TopDownWASDMovement : MonoBehaviour
     float dashSpeed = 5.5f;
     float dashTime = 0.1f;
 
-
     private void Awake()
     {
         playerInput = new PlayerInput();
@@ -238,6 +237,8 @@ public class TopDownWASDMovement : MonoBehaviour
         animator.SetFloat("horizontalMovement", VelocityX);
         animator.SetFloat("verticalMovement", VelocityZ);
     }
+
+
 
     void handleShieldStance()
     {

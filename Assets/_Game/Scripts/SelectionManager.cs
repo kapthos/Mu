@@ -9,7 +9,18 @@ public class SelectionManager : MonoBehaviour
     GameObject objetoSelecionado;
     GameObject previousSelected;
 
-    void Update()
+    GameObject[] allEnemies;
+    GameObject closestEnemy;
+    GameObject closestHere;
+    string tagToDetect = "Enemies";
+
+
+    private void Start()
+    {
+        allEnemies = GameObject.FindGameObjectsWithTag(tagToDetect);
+    }
+
+    void ClickSelect()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -41,5 +52,43 @@ public class SelectionManager : MonoBehaviour
             previousSelected = null;
             objetoSelecionado = null;
         }
+    }
+
+    void ClosestEnemy()
+    {
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            float leastDistance = 10f;
+
+            foreach (var enemy in allEnemies)
+            {
+                float distanceHere = Vector3.Distance(transform.position, enemy.transform.position);
+
+                if (distanceHere < leastDistance)
+                {
+                    leastDistance = distanceHere;
+                    closestHere = enemy;
+                }
+                print(closestHere);
+            }
+            if (objetoSelecionado == null)
+            {
+                objetoSelecionado = closestHere;
+                objetoSelecionado.GetComponent<Outline>().OutlineWidth = borderSelectionSize;
+            }
+            else if (objetoSelecionado != null)
+            {
+                previousSelected = objetoSelecionado;
+                previousSelected.GetComponent<Outline>().OutlineWidth = 0;
+                objetoSelecionado = objetoSelecionado = closestHere;
+                objetoSelecionado.GetComponent<Outline>().OutlineWidth = borderSelectionSize;
+            }
+
+        }
+    }
+    void Update()
+    {
+        ClickSelect();
+        ClosestEnemy();
     }
 }
