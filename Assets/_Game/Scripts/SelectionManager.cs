@@ -9,16 +9,8 @@ public class SelectionManager : MonoBehaviour
     GameObject objetoSelecionado;
     GameObject previousSelected;
 
-    GameObject[] allEnemies;
-    GameObject closestEnemy;
-    GameObject closestHere;
-    string tagToDetect = "Enemies";
-
-
-    private void Start()
-    {
-        allEnemies = GameObject.FindGameObjectsWithTag(tagToDetect);
-    }
+    [SerializeField] float range;
+    [SerializeField] GameObject teste;
 
     void ClickSelect()
     {
@@ -58,37 +50,20 @@ public class SelectionManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            float leastDistance = 10f;
-
-            foreach (var enemy in allEnemies)
+            Collider[] colliderArray = Physics.OverlapSphere(transform.position, range);
+            foreach (Collider collider in colliderArray)
             {
-                float distanceHere = Vector3.Distance(transform.position, enemy.transform.position);
-
-                if (distanceHere < leastDistance)
+                if (collider.TryGetComponent<Outline>(out Outline outline))
                 {
-                    leastDistance = distanceHere;
-                    closestHere = enemy;
+                    teste = collider.gameObject;
+                    Debug.Log(collider.transform.name);
                 }
-                print(closestHere);
-            }
-            if (objetoSelecionado == null)
-            {
-                objetoSelecionado = closestHere;
-                objetoSelecionado.GetComponent<Outline>().OutlineWidth = borderSelectionSize;
-            }
-            else if (objetoSelecionado != null)
-            {
-                previousSelected = objetoSelecionado;
-                previousSelected.GetComponent<Outline>().OutlineWidth = 0;
-                objetoSelecionado = objetoSelecionado = closestHere;
-                objetoSelecionado.GetComponent<Outline>().OutlineWidth = borderSelectionSize;
             }
 
         }
     }
     void Update()
     {
-        ClickSelect();
         ClosestEnemy();
     }
 }

@@ -62,15 +62,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Aim"",
-                    ""type"": ""Value"",
-                    ""id"": ""76f29a26-5b0d-4700-a0b8-9ba0fa4bdca3"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -161,17 +152,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""Shield"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""2b5f5e69-f8fd-49b1-95cf-f7baffc3ba4b"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Kayboard"",
-                    ""action"": ""Aim"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -201,7 +181,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         m_CharacterControls_Jump = m_CharacterControls.FindAction("Jump", throwIfNotFound: true);
         m_CharacterControls_Run = m_CharacterControls.FindAction("Run", throwIfNotFound: true);
         m_CharacterControls_Shield = m_CharacterControls.FindAction("Shield", throwIfNotFound: true);
-        m_CharacterControls_Aim = m_CharacterControls.FindAction("Aim", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -265,7 +244,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_CharacterControls_Jump;
     private readonly InputAction m_CharacterControls_Run;
     private readonly InputAction m_CharacterControls_Shield;
-    private readonly InputAction m_CharacterControls_Aim;
     public struct CharacterControlsActions
     {
         private @PlayerInput m_Wrapper;
@@ -274,7 +252,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_CharacterControls_Jump;
         public InputAction @Run => m_Wrapper.m_CharacterControls_Run;
         public InputAction @Shield => m_Wrapper.m_CharacterControls_Shield;
-        public InputAction @Aim => m_Wrapper.m_CharacterControls_Aim;
         public InputActionMap Get() { return m_Wrapper.m_CharacterControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -296,9 +273,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Shield.started -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnShield;
                 @Shield.performed -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnShield;
                 @Shield.canceled -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnShield;
-                @Aim.started -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnAim;
-                @Aim.performed -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnAim;
-                @Aim.canceled -= m_Wrapper.m_CharacterControlsActionsCallbackInterface.OnAim;
             }
             m_Wrapper.m_CharacterControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -315,9 +289,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Shield.started += instance.OnShield;
                 @Shield.performed += instance.OnShield;
                 @Shield.canceled += instance.OnShield;
-                @Aim.started += instance.OnAim;
-                @Aim.performed += instance.OnAim;
-                @Aim.canceled += instance.OnAim;
             }
         }
     }
@@ -337,6 +308,5 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
         void OnShield(InputAction.CallbackContext context);
-        void OnAim(InputAction.CallbackContext context);
     }
 }

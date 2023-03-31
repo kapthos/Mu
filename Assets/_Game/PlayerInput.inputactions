@@ -40,15 +40,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Aim",
-                    "type": "Value",
-                    "id": "76f29a26-5b0d-4700-a0b8-9ba0fa4bdca3",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -137,17 +128,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Shield",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2b5f5e69-f8fd-49b1-95cf-f7baffc3ba4b",
-                    "path": "<Mouse>/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Kayboard",
-                    "action": "Aim",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
