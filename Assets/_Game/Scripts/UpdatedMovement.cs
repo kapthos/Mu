@@ -10,6 +10,7 @@ public class UpdatedMovement : MonoBehaviour
     CharacterController controller;
     Animator animator;
     SelectionManager selectionManager;
+    [SerializeField] Camera mainCamera;
 
     //Variaveis movimento
     Vector2 currentMovementInput;
@@ -21,7 +22,7 @@ public class UpdatedMovement : MonoBehaviour
     bool isRunPressed = false;
     float speed;
     float runMultiplier = 1.7f;
-    float rotationFactorPerFrame = 1.0f;
+    float rotationFactorPerFrame = 0.1f;
 
     float regularSpeed = 7f;
     float walkSpeed = 2f;
@@ -151,8 +152,14 @@ public class UpdatedMovement : MonoBehaviour
 
     void handleAttack()
     {
-        if (Input.GetMouseButtonDown(0) && controller.isGrounded)
+        if (Input.GetMouseButtonDown(0))
         {
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            Physics.Raycast(ray, out RaycastHit raycast);
+
+            Vector3 directionToFace = raycast.point - transform.position;
+            transform.rotation = Quaternion.LookRotation(directionToFace);
+
             isAttacking = true;
             animator.SetBool("isAttacking", true);
             speed = stunned;
