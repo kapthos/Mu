@@ -15,6 +15,8 @@ public class CameraRotate : MonoBehaviour
     float zoomSpeed = 2.5f;
     float zoomAmount = 2f;
     Vector3 zoomDir;
+    bool DragRotateActive;
+    Vector3 lastMousePosition;
 
     private void Awake()
     {
@@ -31,6 +33,31 @@ public class CameraRotate : MonoBehaviour
         {
             isHeldDown = false;
         }
+    }
+
+    void HandleCameraRotation()
+    {
+        float rotateDir = 0f;
+        float rotateSpeed = 100f;
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            DragRotateActive = true;
+            lastMousePosition = Input.mousePosition;
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
+            DragRotateActive = false;
+        }
+
+        if (DragRotateActive)
+        {
+            Vector3 mouseMovementDelta = Input.mousePosition - lastMousePosition;
+            rotateDir = mouseMovementDelta.x;
+            lastMousePosition = Input.mousePosition;
+        }
+
+        transform.eulerAngles += new Vector3(0, rotateDir * rotateSpeed * Time.deltaTime, 0);
     }
 
     void HandleCameraZoomStyles()
@@ -84,6 +111,7 @@ public class CameraRotate : MonoBehaviour
 
     void Update()
     {
+        HandleCameraRotation();
         HoldButton();
         HandleCameraZoomStyles();
     }
